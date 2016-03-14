@@ -1,0 +1,60 @@
+#!/usr/bin/env python
+
+import sys
+import argparse
+
+import tcolorlib
+
+def rgb_to_ansi((r,g,b), background=False):
+    if args.ansi256:
+        return tcolorlib.rgb_to_ansi_256colors((r,g,b), background)
+    else:
+        return tcolorlib.rgb_to_ansi_truecolor((r,g,b), background)
+
+def set_color_support_defaults():
+    try:
+        issue = open("/etc/issue").read()
+        if "Ubuntu 14.04" in issue:
+            # gnome-terminal supports true color by default but it needs to be
+            # linked to libvte >= 0.36 which isn't the case for ubuntu 14.04
+            args.ansi256 = True
+    except:
+        pass
+
+def main():
+    set_color_support_defaults()
+
+    if args.bgcolor:
+        rgb_bgcolor = tcolorlib.webcolor_to_rgb(args.bgcolor)
+        if not rgb_bgcolor:
+            print "ERROR: invalid background color '%s'" % args.bgcolor
+            sys.exit(1)
+
+        sys.stdout.write(rgb_to_ansi(rgb_bgcolor, background=True))
+
+    if args.color:
+        rgb_color = tcolorlib.webcolor_to_rgb(args.color)
+        if not rgb_color:
+            print "ERROR: invalid color '%s'" % args.color
+            sys.exit(1)
+
+        sys.stdout.write(rgb_to_ansi(rgb_color))
+
+    sys.stdout.write(" ".join(args.msg))
+
+    if args.color or args.bgcolor:
+        sys.stdout.write(tcolorlib.ANSI_RESET_COLOR)
+
+    sys.stdout.write("\n")
+
+if __name__ == '__main__':
+    try:
+        parser = argparse.ArgumentParser()
+        parser.add_argument('--color')
+        parser.add_argument('--bgcolor')
+        parser.add_argument('msg', nargs='*')
+        parser.add_argument("--ansi256", action="store_true", help="fallback to 256 color mode (useful if your terminal doesn't support ANSI escape codes for proper RGB colors)")
+        args = parser.parse_args()
+        sys.exit(main())
+    except KeyboardInterrupt:
+        pass
