@@ -13,31 +13,31 @@ def rgb_to_ansi((r,g,b), background=False):
         return tcolorlib.rgb_to_ansi_truecolor((r,g,b), background)
 
 def highlight(all_patterns, line):
-    line_fbcolor = ""
+    line_colors = ""
     for pattern in all_patterns:
         if pattern["kind"] == 'foreground-line' and re.search(pattern["param"], line):
-            line_fbcolor += rgb_to_ansi(pattern["rgb_color"])
+            line_colors += rgb_to_ansi(pattern["rgb_color"])
         elif pattern["kind"] == 'background-line' and re.search(pattern["param"], line):
-            line_fbcolor += rgb_to_ansi(pattern["rgb_color"])
+            line_colors += rgb_to_ansi(pattern["rgb_color"], background=True)
     for pattern in all_patterns:
         if pattern["kind"] == 'foreground':
-            line = re.sub(pattern["param"], rgb_to_ansi(pattern["rgb_color"]) + "\g<0>" + (line_fbcolor or tcolorlib.ANSI_RESET_COLOR), line, count=0)
+            line = re.sub(pattern["param"], rgb_to_ansi(pattern["rgb_color"]) + "\g<0>" + (line_colors or tcolorlib.ANSI_RESET_COLOR), line, count=0)
         elif pattern["kind"] == 'background':
-            line = re.sub(pattern["param"], rgb_to_ansi(pattern["rgb_color"], background=True) + "\g<0>" + (line_fbcolor or tcolorlib.ANSI_RESET_COLOR), line, count=0)
+            line = re.sub(pattern["param"], rgb_to_ansi(pattern["rgb_color"], background=True) + "\g<0>" + (line_colors or tcolorlib.ANSI_RESET_COLOR), line, count=0)
         elif pattern["kind"] == 'foreground-colnum':
             target_col_index = pattern["param"] - 1
             cols = line.split(" ")
             if target_col_index < len(cols):
-                cols[target_col_index] = rgb_to_ansi(pattern["rgb_color"]) + cols[target_col_index] + (line_fbcolor or tcolorlib.ANSI_RESET_COLOR)
+                cols[target_col_index] = rgb_to_ansi(pattern["rgb_color"]) + cols[target_col_index] + (line_colors or tcolorlib.ANSI_RESET_COLOR)
                 line = ' '.join(cols)
         elif pattern["kind"] == 'background-colnum':
             target_col_index = pattern["param"] - 1
             cols = line.split(" ")
             if target_col_index < len(cols):
-                cols[target_col_index] = rgb_to_ansi(pattern["rgb_color"], background=True) + cols[target_col_index] + (line_fbcolor or tcolorlib.ANSI_RESET_COLOR)
+                cols[target_col_index] = rgb_to_ansi(pattern["rgb_color"], background=True) + cols[target_col_index] + (line_colors or tcolorlib.ANSI_RESET_COLOR)
                 line = ' '.join(cols)
-    if line_fbcolor:
-        return line_fbcolor + line + tcolorlib.ANSI_RESET_COLOR
+    if line_colors:
+        return line_colors + line.strip("\n") + tcolorlib.ANSI_RESET_COLOR + "\n"
     else:
         return line
 
