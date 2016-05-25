@@ -95,12 +95,12 @@ def main():
 if __name__ == '__main__':
     try:
         parser = argparse.ArgumentParser()
-        parser.add_argument("--color-pattern", nargs=2, metavar="COLOR REGEX", action='append', default=[])
-        parser.add_argument("--bgcolor-pattern", nargs=2, metavar="COLOR REGEX", action='append', default=[])
-        parser.add_argument("--color-pattern-line", nargs=2, metavar="COLOR REGEX", action='append', default=[])
-        parser.add_argument("--bgcolor-pattern-line", nargs=2, metavar="COLOR REGEX", action='append', default=[])
-        parser.add_argument("--color-colnum", nargs=2, metavar="COLOR COLNUM", action='append', default=[])
-        parser.add_argument("--bgcolor-colnum", nargs=2, metavar="COLOR COLNUM", action='append', default=[])
+        parser.add_argument("--color-pattern", nargs=2, metavar="PARAM", help="first param is COLOR, second param is REGEX", action='append', default=[])
+        parser.add_argument("--bgcolor-pattern", nargs=2, metavar="PARAM", help="first param is COLOR, second param is REGEX", action='append', default=[])
+        parser.add_argument("--color-pattern-line", nargs=2, metavar="PARAM", help="first param is COLOR, second param is REGEX", action='append', default=[])
+        parser.add_argument("--bgcolor-pattern-line", nargs=2, metavar="PARAM", help="first param is COLOR, second param is REGEX", action='append', default=[])
+        parser.add_argument("--color-colnum", nargs=2, metavar="PARAM", help="first param is COLOR, second param is COLNUM", action='append', default=[])
+        parser.add_argument("--bgcolor-colnum", nargs=2, metavar="PARAM", help="first param is COLOR, second param is COLNUM", action='append', default=[])
         parser.add_argument("--ansi256", help="fallback to 256 color mode (useful if your terminal doesn't support ANSI escape codes for proper RGB colors)")
         args = parser.parse_args()
         sys.exit(main())
