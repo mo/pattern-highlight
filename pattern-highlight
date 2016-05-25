@@ -15,28 +15,40 @@ def rgb_to_ansi((r,g,b), background=False):
 def highlight(all_patterns, line):
     line_fbcolor = ""
     for pattern in all_patterns:
-        if pattern["kind"] == 'foreground-line' and re.search(pattern["regex"], line):
+        if pattern["kind"] == 'foreground-line' and re.search(pattern["param"], line):
             line_fbcolor += rgb_to_ansi(pattern["rgb_color"])
-        elif pattern["kind"] == 'background-line' and re.search(pattern["regex"], line):
+        elif pattern["kind"] == 'background-line' and re.search(pattern["param"], line):
             line_fbcolor += rgb_to_ansi(pattern["rgb_color"])
     for pattern in all_patterns:
         if pattern["kind"] == 'foreground':
-            line = re.sub(pattern["regex"], rgb_to_ansi(pattern["rgb_color"]) + "\g<0>" + (line_fbcolor or tcolorlib.ANSI_RESET_COLOR), line, count=0)
+            line = re.sub(pattern["param"], rgb_to_ansi(pattern["rgb_color"]) + "\g<0>" + (line_fbcolor or tcolorlib.ANSI_RESET_COLOR), line, count=0)
         elif pattern["kind"] == 'background':
-            line = re.sub(pattern["regex"], rgb_to_ansi(pattern["rgb_color"], background=True) + "\g<0>" + (line_fbcolor or tcolorlib.ANSI_RESET_COLOR), line, count=0)
+            line = re.sub(pattern["param"], rgb_to_ansi(pattern["rgb_color"], background=True) + "\g<0>" + (line_fbcolor or tcolorlib.ANSI_RESET_COLOR), line, count=0)
+        elif pattern["kind"] == 'foreground-colnum':
+            target_col_index = pattern["param"] - 1
+            cols = line.split(" ")
+            if target_col_index < len(cols):
+                cols[target_col_index] = rgb_to_ansi(pattern["rgb_color"]) + cols[target_col_index] + (line_fbcolor or tcolorlib.ANSI_RESET_COLOR)
+                line = ' '.join(cols)
+        elif pattern["kind"] == 'background-colnum':
+            target_col_index = pattern["param"] - 1
+            cols = line.split(" ")
+            if target_col_index < len(cols):
+                cols[target_col_index] = rgb_to_ansi(pattern["rgb_color"], background=True) + cols[target_col_index] + (line_fbcolor or tcolorlib.ANSI_RESET_COLOR)
+                line = ' '.join(cols)
     if line_fbcolor:
         return line_fbcolor + line + tcolorlib.ANSI_RESET_COLOR
     else:
         return line
 
 def load_patterns(args):
-    def load(color, regex, kind):
+    def load(color, param, kind):
         rgb_color = tcolorlib.webcolor_to_rgb(color)
         if not rgb_color:
             print "ERROR: invalid color '%s'" % color
             sys.exit(1)
         all_patterns.append({
-            "regex": regex,
+            "param": param,
             "kind": kind,
             "rgb_color": rgb_color
         })
@@ -50,6 +62,10 @@ def load_patterns(args):
         load(color, regex, "foreground-line")
     for (color, regex) in args.bgcolor_pattern_line:
         load(color, regex, "background-line")
+    for (color, colnum) in args.color_colnum:
+        load(color, int(colnum), "foreground-colnum")
+    for (color, colnum) in args.bgcolor_colnum:
+        load(color, int(colnum), "background-colnum")
     return all_patterns
 
 def set_color_support_defaults():
@@ -83,6 +99,8 @@ if __name__ == '__main__':
         parser.add_argument("--bgcolor-pattern", nargs=2, metavar="COLOR REGEX", action='append', default=[])
         parser.add_argument("--color-pattern-line", nargs=2, metavar="COLOR REGEX", action='append', default=[])
         parser.add_argument("--bgcolor-pattern-line", nargs=2, metavar="COLOR REGEX", action='append', default=[])
+        parser.add_argument("--color-colnum", nargs=2, metavar="COLOR COLNUM", action='append', default=[])
+        parser.add_argument("--bgcolor-colnum", nargs=2, metavar="COLOR COLNUM", action='append', default=[])
         parser.add_argument("--ansi256", help="fallback to 256 color mode (useful if your terminal doesn't support ANSI escape codes for proper RGB colors)")
         args = parser.parse_args()
         sys.exit(main())
