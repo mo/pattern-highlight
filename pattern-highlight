@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import re
 import sys
 import argparse
@@ -80,6 +81,7 @@ def set_color_support_defaults():
 
 def main():
     set_color_support_defaults()
+    sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
     all_patterns = load_patterns(args)
     sys.stdout.write(tcolorlib.ANSI_RESET_COLOR)
