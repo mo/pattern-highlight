@@ -5,11 +5,11 @@ import argparse
 
 import tcolorlib
 
-def rgb_to_ansi((r,g,b), background=False):
+def rgb_to_ansi(rgb, background=False):
     if args.ansi256:
-        return tcolorlib.rgb_to_ansi_256colors((r,g,b), background)
+        return tcolorlib.rgb_to_ansi_256colors((rgb[0], rgb[1], rgb[2]), background)
     else:
-        return tcolorlib.rgb_to_ansi_truecolor((r,g,b), background)
+        return tcolorlib.rgb_to_ansi_truecolor((rgb[0], rgb[1], rgb[2]), background)
 
 def set_color_support_defaults():
     try:
@@ -27,7 +27,7 @@ def main():
     if args.bgcolor:
         rgb_bgcolor = tcolorlib.webcolor_to_rgb(args.bgcolor)
         if not rgb_bgcolor:
-            print "ERROR: invalid background color '%s'" % args.bgcolor
+            print("ERROR: invalid background color '%s'" % args.bgcolor)
             sys.exit(1)
 
         sys.stdout.write(rgb_to_ansi(rgb_bgcolor, background=True))
@@ -35,7 +35,7 @@ def main():
     if args.color:
         rgb_color = tcolorlib.webcolor_to_rgb(args.color)
         if not rgb_color:
-            print "ERROR: invalid color '%s'" % args.color
+            print("ERROR: invalid color '%s'" % args.color)
             sys.exit(1)
 
         sys.stdout.write(rgb_to_ansi(rgb_color))

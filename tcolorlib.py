@@ -193,19 +193,19 @@ def webcolor_to_rgb(webcolor):
 
     return (r, g, b)
 
-def rgb_to_ansi_truecolor((r,g,b), background):
+def rgb_to_ansi_truecolor(rgb, background):
     if not background:
-        return "\033[38;2;%d;%d;%dm" % (r, g, b)
+        return "\033[38;2;%d;%d;%dm" % (rgb[0], rgb[1], rgb[2])
     else:
-        return "\033[48;2;%d;%d;%dm" % (r, g, b)
+        return "\033[48;2;%d;%d;%dm" % (rgb[0], rgb[1], rgb[2])
 
-def rgb_to_ansi_256colors((r,g,b), background):
-    if r == b == g:
+def rgb_to_ansi_256colors(rgb, background):
+    if rgb[0] == rgb[1] == rgb[2]:
         ansi256_color = 232 + 24 * r / float(255)
     else:
-        ansi256_r = 5 * r / float(255)
-        ansi256_g = 5 * g / float(255)
-        ansi256_b = 5 * b / float(255)
+        ansi256_r = 5 * rgb[0] / float(255)
+        ansi256_g = 5 * rgb[1] / float(255)
+        ansi256_b = 5 * rgb[2] / float(255)
         ansi256_color = 16 + 36 * ansi256_r + 6 * ansi256_g + ansi256_b
 
     if background:

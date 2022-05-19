@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import re
@@ -7,11 +7,11 @@ import argparse
 
 import tcolorlib
 
-def rgb_to_ansi((r,g,b), background=False):
+def rgb_to_ansi(rgb, background=False):
     if args.ansi256:
-        return tcolorlib.rgb_to_ansi_256colors((r,g,b), background)
+        return tcolorlib.rgb_to_ansi_256colors((rgb[0], rgb[1], rgb[2]), background)
     else:
-        return tcolorlib.rgb_to_ansi_truecolor((r,g,b), background)
+        return tcolorlib.rgb_to_ansi_truecolor((rgb[0], rgb[1], rgb[2]), background)
 
 def highlight(all_patterns, line):
     line_colors = ""
@@ -46,7 +46,7 @@ def load_patterns(args):
     def load(color, param, kind):
         rgb_color = tcolorlib.webcolor_to_rgb(color)
         if not rgb_color:
-            print "ERROR: invalid color '%s'" % color
+            print("ERROR: invalid color '%s'" % color)
             sys.exit(1)
         all_patterns.append({
             "param": param,
@@ -81,10 +81,10 @@ def set_color_support_defaults():
 
 def main():
     set_color_support_defaults()
-    sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+    sys.stdout = os.fdopen(sys.stdout.fileno(), 'wb', 0)
 
     all_patterns = load_patterns(args)
-    sys.stdout.write(tcolorlib.ANSI_RESET_COLOR)
+    sys.stdout.write(tcolorlib.ANSI_RESET_COLOR.encode())
     while True:
         line = sys.stdin.readline()
         if not line:
@@ -92,7 +92,7 @@ def main():
 
         line = highlight(all_patterns, line)
 
-        print line,
+        sys.stdout.write(line.encode())
 
 if __name__ == '__main__':
     try:
