@@ -22,9 +22,9 @@ def highlight(all_patterns, line):
             line_colors += rgb_to_ansi(pattern["rgb_color"], background=True)
     for pattern in all_patterns:
         if pattern["kind"] == 'foreground':
-            line = re.sub(pattern["param"], rgb_to_ansi(pattern["rgb_color"]) + "\g<0>" + (line_colors or tcolorlib.ANSI_RESET_COLOR), line, count=0)
+            line = re.sub(pattern["param"], rgb_to_ansi(pattern["rgb_color"]) + "\\g<0>" + (line_colors or tcolorlib.ANSI_RESET_COLOR), line, count=0)
         elif pattern["kind"] == 'background':
-            line = re.sub(pattern["param"], rgb_to_ansi(pattern["rgb_color"], background=True) + "\g<0>" + (line_colors or tcolorlib.ANSI_RESET_COLOR), line, count=0)
+            line = re.sub(pattern["param"], rgb_to_ansi(pattern["rgb_color"], background=True) + "\\g<0>" + (line_colors or tcolorlib.ANSI_RESET_COLOR), line, count=0)
         elif pattern["kind"] == 'foreground-colnum':
             target_col_index = pattern["param"] - 1
             cols = line.split(" ")
